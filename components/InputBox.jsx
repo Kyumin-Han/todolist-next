@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const InputBox = ({ todoList, setTodoList }) => {
   const [text, setText] = useState("");
   const [fileUrl, setFileUrl] = useState("");
   const inputRef = useRef(null);
+  const fileInput = useRef(null);
 
   const onChangeInput = (e) => {
     setText(e.target.value);
@@ -35,33 +36,61 @@ const InputBox = ({ todoList, setTodoList }) => {
 
     setText("");
     inputRef.current.focus();
+    fileInput.current.value = "";
   };
 
   return (
-    <div className="flex justify-center items-center">
-      <h1 className="text-5xl">TodoList</h1>
-      <form onSubmit={onClickAddButton}>
-        <input
-          className="w-full border-gray-300 px-2 transition-all border-blue rounded-sm m-auto"
-          type="text"
-          placeholder="할 일을 입력해주세요"
-          value={text}
-          ref={inputRef}
-          onChange={onChangeInput}
-        />
-        <input
-          className="w-full border-gray-300 px-2 transition-all border-blue rounded-sm m-auto"
-          type="file"
-          onChange={onChangeFile}
-        />
-      </form>
-      <button
-        type="submit"
-        onClick={onClickAddButton}
-        className="shadow w-32 border-blue-600 border-2 rounded-full focus:outline-none focus:border-blue-600 px-4 py-2 text-blue-600 hover:bg-blue-600 hover:text-white m-auto"
-      >
-        저장
-      </button>
+    <div className="flex flex-col">
+      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <table className="min-w-full divide-y divide-white">
+              <thead className="bg-gray-50"></thead>
+              <tbody className="bg-indigo-700">
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="ml-4">
+                        <h1 className="text-5xl text-white">TodoList</h1>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-white font-thin">
+                    <form onSubmit={onClickAddButton}>
+                      <div>
+                        <input
+                          className="w-full border-gray-300 px-2 transition-all border-blue rounded-sm m-auto"
+                          type="text"
+                          placeholder="할 일을 입력해주세요"
+                          value={text}
+                          ref={inputRef}
+                          onChange={onChangeInput}
+                        />
+                        <br />
+                        <input
+                          className="w-full border-gray-300 px-2 transition-all border-blue rounded-sm m-auto"
+                          type="file"
+                          ref={fileInput}
+                          onChange={onChangeFile}
+                        />
+                      </div>
+                    </form>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-left text-sm text-white font-bold leading-normal">
+                    <button
+                      type="submit"
+                      onClick={onClickAddButton}
+                      className="shadow w-32 border-white-800 border-2 rounded-full focus:outline-none focus:border-white px-4 py-2 text-white hover:bg-white hover:text-black"
+                    >
+                      저장
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

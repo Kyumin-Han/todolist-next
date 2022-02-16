@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 const ToDoItem = ({ todoItem, todoList, setTodoList, index }) => {
   const [edited, setEdited] = useState(false);
   const [newText, setNewText] = useState(todoItem.text);
+  const [newFile, setNewFile] = useState(todoItem.fileUrl);
   const editInputRef = useRef(null);
 
   useEffect(() => {
@@ -32,6 +33,22 @@ const ToDoItem = ({ todoItem, todoList, setTodoList, index }) => {
     setTodoList(nextTodoList);
   };
 
+  const onChangeEditFile = (e) => {
+    e.preventDefault();
+
+    const reader = new FileReader();
+
+    if (e.target.files[0]) {
+      reader.readAsDataURL(e.target.files[0]);
+    }
+
+    reader.onloadend = () => {
+      const previewImgUrl = reader.result;
+
+      setNewFile(previewImgUrl);
+    };
+  };
+
   const onClickEditButton = () => {
     setEdited(true);
   };
@@ -41,6 +58,7 @@ const ToDoItem = ({ todoItem, todoList, setTodoList, index }) => {
     const nextTodoList = todoList.map((item) => ({
       ...item,
       text: item.id === todoItem.id ? newText : item.text,
+      fileUrl: item.id === todoItem.id ? newFile : item.fileUrl,
     }));
     setTodoList(nextTodoList);
 
@@ -48,54 +66,65 @@ const ToDoItem = ({ todoItem, todoList, setTodoList, index }) => {
   };
 
   return (
-    <li>
-      <form onSubmit={onClickSubmitButton}>
-        <input
-          type="checkbox"
-          id={todoItem.id}
-          checked={todoItem.checked}
-          onChange={onChangeCheckbox}
-        />
-        {edited ? (
+    <li className="border-gray-400 flex flex-row">
+      <div class="select-none flex flex-1 items-center p-4 transition duration-500 ease-in-out transform hover:-translate-y-2 rounded-2xl border-2 p-6 hover:shadow-2xl border-indigo-400">
+        <form onSubmit={onClickSubmitButton}>
           <input
-            type="text"
-            value={newText}
+            type="checkbox"
+            id={todoItem.id}
             checked={todoItem.checked}
-            ref={editInputRef}
-            onChange={onChangeEditInput}
+            onChange={onChangeCheckbox}
           />
-        ) : // 수정 할 시 초기 생성할 때 선택했던 파일이 선택 되어 있게 하고
-        // 새로운 파일을 선택하면 갱신 아니면 그대로
-        todoItem.fileUrl ? (
-          <div>
+          {edited ? (
+            <div>
+              <input
+                type="text"
+                value={newText}
+                checked={todoItem.checked}
+                ref={editInputRef}
+                onChange={onChangeEditInput}
+              />
+              <input type="file" onChange={onChangeEditFile} />
+              <img
+                className="w-48 h-48"
+                src={newFile}
+                alt="사진이 등록되지 않았습니다."
+              />
+            </div>
+          ) : // 수정 할 시 초기 생성할 때 선택했던 파일이 선택 되어 있게 하고
+          // 새로운 파일을 선택하면 갱신 아니면 그대로
+          todoItem.fileUrl ? (
+            <div className="inline">
+              <label htmlFor={todoItem.id}>{todoItem.text}</label>
+              <br />
+              <img className="w-48 h-48 inline-block" src={todoItem.fileUrl} />
+            </div>
+          ) : (
             <label htmlFor={todoItem.id}>{todoItem.text}</label>
-            <img src={todoItem.fileUrl} />
-          </div>
-        ) : (
-          <label htmlFor={todoItem.id}>{todoItem.text}</label>
-        )}
-      </form>
+          )}
+        </form>
 
-      {!todoItem.checked ? (
-        edited ? (
-          <button type="submit" onClick={onClickSubmitButton}>
-            확인
-          </button>
-        ) : (
-          <button type="button" onClick={onClickEditButton}>
-            수정
-          </button>
-        )
-      ) : null}
+        {!todoItem.checked ? (
+          edited ? (
+            <button type="submit" onClick={onClickSubmitButton}>
+              확인
+            </button>
+          ) : (
+            <button type="button" onClick={onClickEditButton}>
+              수정
+            </button>
+          )
+        ) : null}
 
-      <button
-        type="button"
-        onClick={() => {
-          onClickDeleteButton(index);
-        }}
-      >
-        삭제
-      </button>
+        <button
+          type="button"
+          onClick={() => {
+            onClickDeleteButton(index);
+          }}
+        >
+          삭제
+        </button>
+      </div>
     </li>
   );
 };
