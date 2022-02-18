@@ -1,69 +1,82 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react'
+import produce from 'immer'
 
 const ToDoItem = ({ todoItem, todoList, setTodoList, index }) => {
-  const [edited, setEdited] = useState(false);
-  const [newText, setNewText] = useState(todoItem.text);
-  const [newFile, setNewFile] = useState(todoItem.fileUrl);
-  const editInputRef = useRef(null);
+  const [edited, setEdited] = useState(false)
+  const [newText, setNewText] = useState(todoItem.text)
+  const [newFile, setNewFile] = useState(todoItem.fileUrl)
+  const editInputRef = useRef(null)
 
   useEffect(() => {
     if (edited) {
-      editInputRef.current.focus();
+      editInputRef.current.focus()
     }
-  }, [edited]);
+  }, [edited])
 
-  const onClickDeleteButton = (id) => {
-    if (window.confirm("할일을 지웁니다")) {
-      const nextTodoList = todoList.filter((item, index) => id !== index);
+  const onClickDeleteButton = id => {
+    if (window.confirm('할일을 지웁니다')) {
+      const nextTodoList = todoList.filter((item, index) => id !== index)
 
-      setTodoList(nextTodoList);
+      setTodoList(nextTodoList)
     }
-  };
+  }
 
-  const onChangeEditInput = (e) => {
-    setNewText(e.target.value);
-  };
+  const onChangeEditInput = e => {
+    setNewText(e.target.value)
+  }
 
   const onChangeCheckbox = () => {
-    const nextTodoList = todoList.map((item) => ({
-      ...item,
-      checked: item.id === todoItem.id ? !item.checked : item.checked,
-    }));
+    // const nextTodoList = todoList.map(item => ({
+    //   ...item,
+    //   checked: item.id === todoItem.id ? !item.checked : item.checked,
+    // }))
 
-    setTodoList(nextTodoList);
-  };
+    const nextTodoList = produce(todoList, draft => {
+      const todo = draft.find(todo => todo.id === todoItem.id)
+      todo.checked = !todo.checked
+    })
 
-  const onChangeEditFile = (e) => {
-    e.preventDefault();
+    setTodoList(nextTodoList)
+  }
 
-    const reader = new FileReader();
+  const onChangeEditFile = e => {
+    e.preventDefault()
+
+    const reader = new FileReader()
 
     if (e.target.files[0]) {
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(e.target.files[0])
     }
 
     reader.onloadend = () => {
-      const previewImgUrl = reader.result;
+      const previewImgUrl = reader.result
 
-      setNewFile(previewImgUrl);
-    };
-  };
+      setNewFile(previewImgUrl)
+    }
+  }
 
   const onClickEditButton = () => {
-    setEdited(true);
-  };
+    setEdited(true)
+  }
 
-  const onClickSubmitButton = (e) => {
-    e.preventDefault();
-    const nextTodoList = todoList.map((item) => ({
-      ...item,
-      text: item.id === todoItem.id ? newText : item.text,
-      fileUrl: item.id === todoItem.id ? newFile : item.fileUrl,
-    }));
-    setTodoList(nextTodoList);
+  const onClickSubmitButton = e => {
+    e.preventDefault()
+    // const nextTodoList = todoList.map(item => ({
+    //   ...item,
+    //   text: item.id === todoItem.id ? newText : item.text,
+    //   fileUrl: item.id === todoItem.id ? newFile : item.fileUrl,
+    // }))
 
-    setEdited(false);
-  };
+    const nextTodoList = produce(todoList, draft => {
+      const todo = draft.find(todo => todo.id === todoItem.id)
+      todo.text = newText
+      todo.fileUrl = newFile
+    })
+
+    setTodoList(nextTodoList)
+
+    setEdited(false)
+  }
 
   return (
     <li className="border-gray-400 flex flex-row">
@@ -119,18 +132,18 @@ const ToDoItem = ({ todoItem, todoList, setTodoList, index }) => {
         <button
           type="button"
           onClick={() => {
-            onClickDeleteButton(index);
+            onClickDeleteButton(index)
           }}
         >
           삭제
         </button>
       </div>
     </li>
-  );
-};
+  )
+}
 
 // input 태그 form태그 감싸기 (완)
 // image 올리기 todoList의 글이랑 이미지 같이 올릴 수 있게 수정
 // tailwind 적용하기
 
-export default ToDoItem;
+export default ToDoItem

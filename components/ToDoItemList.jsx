@@ -1,5 +1,5 @@
-import React from "react";
-import ToDoItem from "./ToDoItem";
+import React from 'react'
+import ToDoItem from './ToDoItem'
 
 const TodoItemList = ({ title, todoList, setTodoList, checkedList }) => (
   <div className="bg-violet-200 container mb-2 flex mx-auto w-full items-center justify-center">
@@ -7,7 +7,7 @@ const TodoItemList = ({ title, todoList, setTodoList, checkedList }) => (
     <ul className="flex flex-col p-4">
       {todoList &&
         todoList.map((todoItem, index) => {
-          if (checkedList !== todoItem.checked) return null;
+          if (checkedList !== todoItem.checked) return null
 
           return (
             <ToDoItem
@@ -17,10 +17,10 @@ const TodoItemList = ({ title, todoList, setTodoList, checkedList }) => (
               setTodoList={setTodoList}
               index={index}
             />
-          );
+          )
         })}
     </ul>
   </div>
-);
+)
 
-export default TodoItemList;
+export default TodoItemList

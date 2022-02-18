@@ -1,43 +1,63 @@
-import { useState, useRef } from "react";
+import { useState, useRef } from 'react'
+import produce from 'immer'
 
 const InputBox = ({ todoList, setTodoList }) => {
-  const [text, setText] = useState("");
-  const [fileUrl, setFileUrl] = useState("");
-  const inputRef = useRef(null);
-  const fileInput = useRef(null);
+  const [text, setText] = useState('')
+  const [fileUrl, setFileUrl] = useState('')
+  const inputRef = useRef(null)
+  const fileInput = useRef(null)
 
-  const onChangeInput = (e) => {
-    setText(e.target.value);
-  };
+  const initialTodo = {
+    id: todoList.length,
+    text,
+    checked: false,
+    fileUrl: fileUrl ? fileUrl : '',
+  }
 
-  const onChangeFile = (e) => {
-    const reader = new FileReader();
+  const onChangeInput = e => {
+    setText(e.target.value)
+  }
+
+  const onChangeFile = e => {
+    const reader = new FileReader()
 
     if (e.target.files[0]) {
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(e.target.files[0])
     }
 
     reader.onloadend = () => {
-      const previewImgUrl = reader.result;
+      const previewImgUrl = reader.result
 
-      setFileUrl(previewImgUrl);
-    };
-  };
+      setFileUrl(previewImgUrl)
+    }
+  }
 
-  const onClickAddButton = (e) => {
-    e.preventDefault();
-    const nextTodoList = todoList.concat({
-      id: todoList.length,
-      text,
-      checked: false,
-      fileUrl: fileUrl ? fileUrl : "",
-    });
-    setTodoList(nextTodoList);
+  const onClickAddButton = e => {
+    e.preventDefault()
+    // const nextTodoList = todoList.concat({
+    //   id: todoList.length,
+    //   text,
+    //   checked: false,
+    //   fileUrl: fileUrl ? fileUrl : "",
+    // });
+    // setTodoList(nextTodoList);
 
-    setText("");
-    inputRef.current.focus();
-    fileInput.current.value = "";
-  };
+    const nextTodoList = produce(todoList, draft => {
+      draft.push({
+        id: todoList.length,
+        text,
+        checked: false,
+        fileUrl: fileUrl ? fileUrl : '',
+      })
+    })
+
+    setTodoList(nextTodoList)
+
+    setText('')
+    setFileUrl('')
+    inputRef.current.focus()
+    fileInput.current.value = ''
+  }
 
   return (
     <div className="flex flex-col">
@@ -55,7 +75,7 @@ const InputBox = ({ todoList, setTodoList }) => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-white font-thin">
+                  <td className="px-6 py-4 whitespace-nowrap font-thin">
                     <form onSubmit={onClickAddButton}>
                       <div>
                         <input
@@ -92,6 +112,6 @@ const InputBox = ({ todoList, setTodoList }) => {
         </div>
       </div>
     </div>
-  );
-};
-export default InputBox;
+  )
+}
+export default InputBox
